@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  store-intelligence:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./input:/app/input
+      - ./store_intelligence.db:/app/store_intelligence.db
+    environment:
+      - DB_PATH=/app/store_intelligence.db
+      - VIDEO_PATH=/app/input/video.mp4
+      - SALES_PATH=/app/input/sales.csv
+      - STORE_ID=ST1008
+      - VIDEO_DATE=2026-04-10
+    restart: unless-stopped

@@ -1,0 +1,16 @@
+# Ignore temporary and generated files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore database and local data files
+*.db
+*.sqlite3
+
+# Ignore large input videos
+input/*.mp4
+
+# Ignore model cache or local artifacts
+*.log
+*.cache

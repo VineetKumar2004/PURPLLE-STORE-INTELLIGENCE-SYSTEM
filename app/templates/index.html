@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Intelligence Dashboard — Purplle ST1008</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Dynamic Theme Variables */
+        
+        /* Neon Amethyst (Default Dark Theme) */
+        :root, [data-theme="neon-amethyst"] {
+            --bg-gradient: radial-gradient(circle at 50% 0%, #160c24 0%, #06020a 100%);
+            --panel-bg: rgba(22, 12, 38, 0.65);
+            --border-color: rgba(186, 104, 200, 0.12);
+            --text-primary: #f5effa;
+            --text-secondary: #ab9fc2;
+            --purplle-accent: #be39df;
+            --purplle-accent-secondary: #8e44ad;
+            --purplle-glow: rgba(190, 57, 223, 0.4);
+            --green-accent: #00e676;
+            --red-accent: #ff2d55;
+            --blue-accent: #00e5ff;
+            --yellow-accent: #ffd600;
+            --shadow-primary: 0 12px 40px rgba(0, 0, 0, 0.5);
+            --header-bg: rgba(6, 2, 10, 0.85);
+            --box-bg: rgba(255, 255, 255, 0.02);
+            --btn-text: #ffffff;
+            --scrollbar-track: rgba(0, 0, 0, 0.1);
+            --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+            --status-complete-bg: rgba(0, 230, 118, 0.1);
+            --status-complete-border: rgba(0, 230, 118, 0.2);
+            --status-running-bg: rgba(41, 121, 255, 0.1);
+            --status-running-border: rgba(41, 121, 255, 0.2);
+            --status-failed-bg: rgba(255, 23, 68, 0.1);
+            --status-failed-border: rgba(255, 23, 68, 0.2);
+            --status-pending-bg: rgba(255, 214, 0, 0.1);
+            --status-pending-border: rgba(255, 214, 0, 0.2);
+        }
+
+        /* Royal Lavender & Rose Gold Theme */
+        [data-theme="royal-lavender"] {
+            --bg-gradient: radial-gradient(circle at 50% 0%, #201726 0%, #0c080f 100%);
+            --panel-bg: rgba(30, 20, 36, 0.75);
+            --border-color: rgba(229, 193, 167, 0.15);
+            --text-primary: #fbf6ef;
+            --text-secondary: #bbaebf;
+            --purplle-accent: #e5c1a7;
+            --purplle-accent-secondary: #caa084;
+            --purplle-glow: rgba(229, 193, 167, 0.3);
+            --green-accent: #a2e8dd;
+            --red-accent: #f28b8b;
+            --blue-accent: #a2c8e8;
+            --yellow-accent: #ebd29b;
+            --shadow-primary: 0 12px 40px rgba(0, 0, 0, 0.65);
+            --header-bg: rgba(12, 8, 15, 0.9);
+            --box-bg: rgba(255, 255, 255, 0.015);
+            --btn-text: #1e1424;
+            --scrollbar-track: rgba(0, 0, 0, 0.1);
+            --scrollbar-thumb: rgba(255, 255, 255, 0.08);
+            --status-complete-bg: rgba(162, 232, 221, 0.1);
+            --status-complete-border: rgba(162, 232, 221, 0.2);
+            --status-running-bg: rgba(162, 200, 232, 0.1);
+            --status-running-border: rgba(162, 200, 232, 0.2);
+            --status-failed-bg: rgba(242, 139, 139, 0.1);
+            --status-failed-border: rgba(242, 139, 139, 0.2);
+            --status-pending-bg: rgba(235, 210, 155, 0.1);
+            --status-pending-border: rgba(235, 210, 155, 0.2);
+        }
+
+        /* Nordic Orchid (Clean Light Theme) */
+        [data-theme="nordic-orchid"] {
+            --bg-gradient: linear-gradient(135deg, #f8f6fb 0%, #eef0f6 100%);
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(142, 36, 170, 0.08);
+            --text-primary: #2b1b3b;
+            --text-secondary: #6e5f7a;
+            --purplle-accent: #8e24aa;
+            --purplle-accent-secondary: #5c007a;
+            --purplle-glow: rgba(142, 36, 170, 0.15);
+            --green-accent: #2e7d32;
+            --red-accent: #c62828;
+            --blue-accent: #1565c0;
+            --yellow-accent: #f57f17;
+            --shadow-primary: 0 8px 30px rgba(142, 36, 170, 0.06);
+            --header-bg: rgba(255, 255, 255, 0.94);
+            --box-bg: rgba(142, 36, 170, 0.02);
+            --btn-text: #ffffff;
+            --scrollbar-track: rgba(0, 0, 0, 0.03);
+            --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+            --status-complete-bg: rgba(46, 125, 50, 0.08);
+            --status-complete-border: rgba(46, 125, 50, 0.2);
+            --status-running-bg: rgba(21, 101, 192, 0.08);
+            --status-running-border: rgba(21, 101, 192, 0.2);
+            --status-failed-bg: rgba(198, 40, 40, 0.08);
+            --status-failed-border: rgba(198, 40, 40, 0.2);
+            --status-pending-bg: rgba(245, 127, 23, 0.08);
+            --status-pending-border: rgba(245, 127, 23, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-gradient); color: var(--text-primary);
+            min-height: 100vh; overflow-x: hidden; padding-bottom: 2rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem 2rem; background: var(--header-bg);
+            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 100;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .logo-section { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon { font-size: 1.75rem; color: var(--purplle-accent); text-shadow: 0 0 10px var(--purplle-glow); transition: all 0.3s ease; }
+        .logo-text {
+            font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--purplle-accent) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+        .status-badge-container { display: flex; align-items: center; gap: 1rem; }
+        .status-badge {
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.85rem;
+            border-radius: 9999px; font-size: 0.8rem; font-weight: 600;
+            letter-spacing: 0.5px; text-transform: uppercase; border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .status-complete { background: var(--status-complete-bg); color: var(--green-accent); border-color: var(--status-complete-border); }
+        .status-running { background: var(--status-running-bg); color: var(--blue-accent); border-color: var(--status-running-border); animation: pulse 1.5s infinite; }
+        .status-failed { background: var(--status-failed-bg); color: var(--red-accent); border-color: var(--status-failed-border); }
+        .status-pending { background: var(--status-pending-bg); color: var(--yellow-accent); border-color: var(--status-pending-border); }
+        .run-pipeline-btn {
+            background: linear-gradient(135deg, var(--purplle-accent), var(--purplle-accent-secondary));
+            color: var(--btn-text); border: none; padding: 0.5rem 1.25rem; border-radius: 8px;
+            font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--purplle-glow); display: flex; align-items: center; gap: 0.5rem;
+        }
+        .run-pipeline-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--purplle-glow); }
+        .container {
+            max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem;
+            display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+        }
+        @media (min-width: 1024px) { .container { grid-template-columns: 1.1fr 0.9fr; } }
+        .column { display: flex; flex-direction: column; gap: 1.5rem; }
+        .card {
+            background: var(--panel-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem;
+            box-shadow: var(--shadow-primary); position: relative; overflow: hidden;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--purplle-accent), transparent);
+            transition: all 0.3s ease;
+        }
+        .card-title {
+            font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700;
+            margin-bottom: 1.25rem; display: flex; justify-content: space-between;
+            align-items: center; color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+        .card-title i { color: var(--purplle-accent); transition: color 0.3s ease; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        @media (min-width: 640px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } }
+        .metric-box {
+            background: var(--box-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.25rem 1rem; display: flex; flex-direction: column;
+            gap: 0.35rem; transition: all 0.3s ease;
+        }
+        .metric-box:hover { background: rgba(255,255,255,0.04); border-color: var(--purplle-accent); transform: translateY(-2px); }
+        .metric-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease; }
+        .metric-value { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; transition: color 0.3s ease; }
+        .metric-growth { font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+        .growth-up { color: var(--green-accent); }
+        .growth-down { color: var(--red-accent); }
+        .video-container { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 16/9; border: 1px solid var(--border-color); transition: border-color 0.3s ease; }
+        .video-player { width: 100%; height: 100%; object-fit: cover; }
+        .video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; text-align: center; padding: 1.5rem; }
+        .video-overlay-icon { font-size: 3rem; color: var(--text-secondary); animation: pulse-light 2s infinite; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .leaderboard-table th { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border-color); transition: color 0.3s ease, border-color 0.3s ease; }
+        .leaderboard-table td { font-size: 0.85rem; padding: 0.85rem 0.5rem; border-bottom: 1px solid var(--border-color); transition: border-color 0.3s ease; }
+        .leaderboard-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .salesperson-rank { font-weight: 700; color: var(--purplle-accent); transition: color 0.3s ease; }
+        .anomaly-feed { display: flex; flex-direction: column; gap: 0.75rem; max-height: 290px; overflow-y: auto; padding-right: 0.25rem; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--purplle-accent); }
+        .anomaly-item { display: flex; gap: 0.75rem; padding: 1rem; border-radius: 10px; background: var(--box-bg); border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .anomaly-item:hover { border-color: var(--purplle-accent); background: rgba(255,255,255,0.02); }
+        .anomaly-icon { font-size: 1.25rem; display: flex; align-items: center; }
+        .severity-high { color: var(--red-accent); }
+        .severity-medium { color: var(--yellow-accent); }
+        .severity-low { color: var(--blue-accent); }
+        .anomaly-details { display: flex; flex-direction: column; gap: 0.2rem; }
+        .anomaly-title { font-size: 0.85rem; font-weight: 700; text-transform: capitalize; }
+        .anomaly-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.3; transition: color 0.3s ease; }
+        .anomaly-time { font-size: 0.65rem; color: rgba(255,255,255,0.3); font-weight: 600; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        @keyframes pulse-light { 0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 0.5; } }
+
+        /* Theme Selector Styles */
+        .theme-selector-container {
+            position: relative;
+            display: inline-block;
+        }
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--purplle-accent);
+        }
+        .theme-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-primary);
+            padding: 0.5rem;
+            z-index: 1000;
+            min-width: 180px;
+        }
+        .theme-menu.show {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            animation: fadeIn 0.2s ease;
+        }
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+        .theme-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .theme-option.active {
+            background: var(--purplle-glow);
+            font-weight: 700;
+        }
+        .theme-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-section">
+            <i class="fa-solid fa-store logo-icon"></i>
+            <span class="logo-text">PURPLLE STORE INTELLIGENCE</span>
+        </div>
+        <div class="status-badge-container">
+            <span id="pipeline-status-badge" class="status-badge status-pending">
+                <i class="fa-solid fa-spinner fa-spin"></i> Checking...
+            </span>
+
+            <!-- Theme Selector Dropdown -->
+            <div class="theme-selector-container">
+                <button class="theme-btn" id="theme-menu-btn" onclick="toggleThemeMenu()">
+                    <i class="fa-solid fa-palette"></i>
+                    <span>Theme</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;"></i>
+                </button>
+                <div class="theme-menu" id="theme-menu">
+                    <div class="theme-option" onclick="setTheme('neon-amethyst')">
+                        <span class="theme-dot" style="background: #be39df;"></span>
+                        <span>Neon Amethyst</span>
+                    </div>
+                    <div class="theme-option" onclick="setTheme('royal-lavender')">
+                        <span class="theme-dot" style="background: #e5c1a7;"></span>
+                        <span>Royal Lavender</span>
+                    </div>
+                    <div class="theme-option" onclick="setTheme('nordic-orchid')">
+                        <span class="theme-dot" style="background: #8e24aa;"></span>
+                        <span>Nordic Orchid</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="run-pipeline-btn" class="run-pipeline-btn" onclick="triggerPipeline()">
+                <i class="fa-solid fa-play"></i> Run Pipeline
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="column">
+            <!-- Video -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-video"></i> CCTV FEED — MAIN ENTRANCE</span>
+                    <span style="font-size:0.75rem;color:var(--text-secondary);" id="video-source-label">Source: N/A</span>
+                </div>
+                <div class="video-container">
+                    <video id="dashboard-video" class="video-player" controls autoplay loop muted>
+                        <source src="/video" type="video/mp4">
+                    </video>
+                    <div id="video-fallback" class="video-overlay" style="display:none;">
+                        <i class="fa-solid fa-triangle-exclamation video-overlay-icon"></i>
+                        <div><h3>No Video Found</h3><p style="font-size:0.8rem;color:var(--text-secondary);">Using synthetic fallback telemetry.</p></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Funnel -->
+            <div class="card">
+                <div class="card-title"><span><i class="fa-solid fa-filter"></i> CUSTOMER CONVERSION FUNNEL</span></div>
+                <div style="height:250px;position:relative;"><canvas id="funnelChart"></canvas></div>
+            </div>
+            <!-- Salesperson -->
+            <div class="card">
+                <div class="card-title"><span><i class="fa-solid fa-users"></i> SALESPERSON STANDINGS</span></div>
+                <table class="leaderboard-table">
+                    <thead><tr><th style="width:10%;">Rank</th><th style="width:60%;">Name</th><th style="width:30%;text-align:right;">Transactions</th></tr></thead>
+                    <tbody id="salesperson-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column">
+            <!-- Metrics -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-chart-simple"></i> KEY PERFORMANCE METRICS</span>
+                    <span style="font-size:0.8rem;color:var(--purplle-accent);" id="store-date-label">ST1008 — 2026-04-10</span>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box"><span class="metric-label">Visitor Footfall</span><span class="metric-value" id="val-footfall">0</span><span class="metric-growth growth-up"><i class="fa-solid fa-caret-up"></i> Unique</span></div>
+                    <div class="metric-box"><span class="metric-label">Conversion Rate</span><span class="metric-value" id="val-conversion">0.0%</span><span class="metric-growth growth-up" id="val-conversion-target"><i class="fa-solid fa-check"></i> Target: >8%</span></div>
+                    <div class="metric-box"><span class="metric-label">Avg Dwell Time</span><span class="metric-value" id="val-dwell">0.0m</span><span class="metric-growth" style="color:var(--text-secondary);">Excludes staff</span></div>
+                    <div class="metric-box"><span class="metric-label">Total GMV</span><span class="metric-value" id="val-gmv">₹0</span><span class="metric-growth growth-up"><i class="fa-solid fa-caret-up"></i> Gross Revenue</span></div>
+                    <div class="metric-box"><span class="metric-label">Total NMV</span><span class="metric-value" id="val-nmv">₹0</span><span class="metric-growth" style="color:var(--text-secondary);">Net Value</span></div>
+                    <div class="metric-box"><span class="metric-label">Staff Count</span><span class="metric-value" id="val-staff">0</span><span class="metric-growth" style="color:var(--text-secondary);">Filtered out</span></div>
+                    <div class="metric-box"><span class="metric-label">Avg Basket Size</span><span class="metric-value" id="val-basket">0.0</span><span class="metric-growth" style="color:var(--text-secondary);">Items / Order</span></div>
+                    <div class="metric-box"><span class="metric-label">Top Brand</span><span class="metric-value" id="val-top-brand" style="font-size:1.15rem;padding-top:0.35rem;">N/A</span><span class="metric-growth" style="color:var(--text-secondary);">By Sales Volume</span></div>
+                    <div class="metric-box"><span class="metric-label">Busiest Zone</span><span class="metric-value" id="val-busiest-zone" style="font-size:1.15rem;padding-top:0.35rem;text-transform:capitalize;">N/A</span><span class="metric-growth" style="color:var(--text-secondary);">Highest Traffic</span></div>
+                </div>
+            </div>
+            <!-- Hourly -->
+            <div class="card">
+                <div class="card-title"><span><i class="fa-solid fa-clock"></i> HOURLY TRAFFIC & REVENUE</span></div>
+                <div style="height:240px;position:relative;"><canvas id="hourlyChart"></canvas></div>
+            </div>
+            <!-- Zones -->
+            <div class="card">
+                <div class="card-title"><span><i class="fa-solid fa-map-location-dot"></i> SHELF ZONE VISITS</span></div>
+                <div style="height:240px;position:relative;"><canvas id="zonesChart"></canvas></div>
+            </div>
+            <!-- Anomalies -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-bell"></i> OPERATIONAL WARNINGS</span>
+                    <span id="anomaly-count-badge" style="background:var(--red-accent);color:white;padding:0.1rem 0.5rem;font-size:0.75rem;border-radius:99px;font-weight:700;">0</span>
+                </div>
+                <div class="anomaly-feed" id="anomaly-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let funnelChartInst = null, hourlyChartInst = null, zonesChartInst = null;
+        let currentFunnelData = null, currentHourlyData = null, currentZonesData = null;
+
+        // Theme Support Functions
+        function getStyleColor(variableName) {
+            return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+        }
+
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('dashboard-theme', themeName);
+            
+            // Update active state in theme options list
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            const selectedOpt = Array.from(document.querySelectorAll('.theme-option')).find(opt => {
+                return opt.getAttribute('onclick').includes(themeName);
+            });
+            if (selectedOpt) selectedOpt.classList.add('active');
+
+            // Close menu
+            const menu = document.getElementById('theme-menu');
+            if (menu) menu.classList.remove('show');
+
+            // Re-render charts with new theme colors
+            if (currentFunnelData) renderFunnel(currentFunnelData);
+            if (currentHourlyData) renderHourly(currentHourlyData);
+            if (currentZonesData) renderZones(currentZonesData);
+        }
+
+        function toggleThemeMenu() {
+            const menu = document.getElementById('theme-menu');
+            if (menu) menu.classList.toggle('show');
+        }
+
+        // Close menu if clicked outside
+        window.addEventListener('click', function(e) {
+            const btn = document.getElementById('theme-menu-btn');
+            const menu = document.getElementById('theme-menu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Initialize theme on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('dashboard-theme') || 'neon-amethyst';
+            setTheme(savedTheme);
+        });
+
+        async function fetchDashboardData() {
+            try {
+                const health = await (await fetch("/health")).json();
+                const badge = document.getElementById("pipeline-status-badge");
+                badge.className = `status-badge status-${health.pipeline_status}`;
+                badge.innerHTML = `<i class="fa-solid ${health.pipeline_status === 'running' ? 'fa-spinner fa-spin' : 'fa-circle-check'}"></i> Pipeline: ${health.pipeline_status}`;
+
+                const videoEl = document.getElementById("dashboard-video");
+                const fallback = document.getElementById("video-fallback");
+                const srcLabel = document.getElementById("video-source-label");
+                if (health.video_exists) { videoEl.style.display = "block"; fallback.style.display = "none"; srcLabel.innerText = "Source: CAM 1.mp4"; }
+                else { videoEl.style.display = "none"; fallback.style.display = "flex"; srcLabel.innerText = "Source: SYNTHETIC MODE"; }
+
+                if (health.pipeline_status === "running") { setTimeout(fetchDashboardData, 5000); return; }
+
+                const m = await (await fetch("/metrics")).json();
+                document.getElementById("val-footfall").innerText = m.total_footfall;
+                document.getElementById("val-conversion").innerText = `${m.conversion_rate}%`;
+                document.getElementById("val-dwell").innerText = `${m.avg_dwell_time_minutes}m`;
+                document.getElementById("val-gmv").innerText = `₹${m.total_gmv.toLocaleString('en-IN')}`;
+                document.getElementById("val-nmv").innerText = `₹${m.total_nmv.toLocaleString('en-IN')}`;
+                document.getElementById("val-staff").innerText = m.staff_count;
+                document.getElementById("val-top-brand").innerText = m.top_brand || "N/A";
+                document.getElementById("val-busiest-zone").innerText = m.busiest_zone || "N/A";
+
+                const tgt = document.getElementById("val-conversion-target");
+                if (m.conversion_rate < 8) { tgt.className = "metric-growth growth-down"; tgt.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Low (Target >8%)`; }
+                else { tgt.className = "metric-growth growth-up"; tgt.innerHTML = `<i class="fa-solid fa-check-double"></i> Optimal`; }
+
+                const funnel = await (await fetch("/funnel")).json();
+                currentFunnelData = funnel.stages;
+                renderFunnel(currentFunnelData);
+
+                const anom = await (await fetch("/anomalies")).json();
+                renderAnomalies(anom.anomalies);
+
+                const hourly = await (await fetch("/hourly")).json();
+                currentHourlyData = hourly.hours;
+                renderHourly(currentHourlyData);
+
+                const zones = await (await fetch("/zones")).json();
+                currentZonesData = zones.zones;
+                renderZones(currentZonesData);
+
+                const sales = await (await fetch("/sales/summary")).json();
+                renderSalespersons(sales.salesperson_performance);
+                document.getElementById("val-basket").innerText = sales.avg_basket_size || "0";
+
+            } catch (err) { console.error("Dashboard error:", err); }
+        }
+
+        async function triggerPipeline() {
+            const btn = document.getElementById("run-pipeline-btn");
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Running...`; btn.disabled = true;
+            try { await fetch("/pipeline/run", { method: "POST" }); setTimeout(fetchDashboardData, 1000); }
+            catch (e) { console.error(e); }
+            finally { btn.innerHTML = `<i class="fa-solid fa-play"></i> Run Pipeline`; btn.disabled = false; }
+        }
+
+        function renderFunnel(stages) {
+            if (!stages) return;
+            const ctx = document.getElementById('funnelChart').getContext('2d');
+            if (funnelChartInst) funnelChartInst.destroy();
+            
+            const textSecondary = getStyleColor('--text-secondary');
+            const textPrimary = getStyleColor('--text-primary');
+            const borderColor = getStyleColor('--border-color');
+
+            let backgroundColors, borderColors;
+            const theme = document.documentElement.getAttribute('data-theme') || 'neon-amethyst';
+            if (theme === 'nordic-orchid') {
+                backgroundColors = ['rgba(142, 36, 170, 0.8)', 'rgba(106, 27, 154, 0.65)', 'rgba(69, 39, 160, 0.5)', 'rgba(46, 125, 50, 0.6)'];
+                borderColors = ['#8e24aa', '#6a1b9a', '#4527a0', '#2e7d32'];
+            } else if (theme === 'royal-lavender') {
+                backgroundColors = ['rgba(229, 193, 167, 0.85)', 'rgba(186, 104, 200, 0.6)', 'rgba(123, 31, 162, 0.45)', 'rgba(162, 232, 221, 0.5)'];
+                borderColors = ['#e5c1a7', '#ba68c8', '#7b1fa2', '#a2e8dd'];
+            } else {
+                backgroundColors = ['rgba(191, 85, 236, 0.85)', 'rgba(138, 43, 226, 0.7)', 'rgba(98, 0, 234, 0.55)', 'rgba(0, 230, 118, 0.45)'];
+                borderColors = ['#bf55ec', '#b388ff', '#8c9eff', '#00e676'];
+            }
+
+            funnelChartInst = new Chart(ctx, {
+                type: 'bar', data: { labels: stages.map(s => s.stage), datasets: [{ label: 'Customers', data: stages.map(s => s.count),
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors, borderWidth: 1, borderRadius: 6 }] },
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { color: borderColor || 'rgba(255,255,255,0.05)' }, ticks: { color: textSecondary } },
+                             y: { grid: { display: false }, ticks: { color: textPrimary, font: { family: 'Plus Jakarta Sans', weight: '600' } } } } }
+            });
+        }
+
+        function renderHourly(hours) {
+            if (!hours) return;
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            if (hourlyChartInst) hourlyChartInst.destroy();
+
+            const textSecondary = getStyleColor('--text-secondary');
+            const textPrimary = getStyleColor('--text-primary');
+            const borderColor = getStyleColor('--border-color');
+            const purplleAccent = getStyleColor('--purplle-accent');
+            const greenAccent = getStyleColor('--green-accent');
+
+            hourlyChartInst = new Chart(ctx, {
+                type: 'line', data: { labels: hours.map(h => h.hour), datasets: [
+                    { label: 'Footfall', data: hours.map(h => h.visitors), borderColor: purplleAccent, backgroundColor: purplleAccent + '15', fill: true, tension: 0.4, yAxisID: 'y' },
+                    { label: 'Revenue (₹)', data: hours.map(h => h.gmv), borderColor: greenAccent, backgroundColor: greenAccent + '15', fill: true, tension: 0.4, yAxisID: 'y1' }
+                ] },
+                options: { responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: textPrimary } } },
+                    scales: { x: { grid: { color: borderColor || 'rgba(255,255,255,0.05)' }, ticks: { color: textSecondary } },
+                             y: { type: 'linear', position: 'left', grid: { color: borderColor || 'rgba(255,255,255,0.05)' }, ticks: { color: textSecondary } },
+                             y1: { type: 'linear', position: 'right', grid: { display: false }, ticks: { color: textSecondary } } } }
+            });
+        }
+
+        function renderZones(zones) {
+            if (!zones) return;
+            const ctx = document.getElementById('zonesChart').getContext('2d');
+            if (zonesChartInst) zonesChartInst.destroy();
+
+            const textPrimary = getStyleColor('--text-primary');
+            const purplleAccent = getStyleColor('--purplle-accent');
+            const greenAccent = getStyleColor('--green-accent');
+            const blueAccent = getStyleColor('--blue-accent');
+            const yellowAccent = getStyleColor('--yellow-accent');
+
+            let colors, borderColors;
+            const theme = document.documentElement.getAttribute('data-theme') || 'neon-amethyst';
+            if (theme === 'nordic-orchid') {
+                colors = ['rgba(142, 36, 170, 0.8)', 'rgba(21, 101, 192, 0.75)', 'rgba(46, 125, 50, 0.7)', 'rgba(245, 127, 23, 0.7)'];
+                borderColors = ['#8e24aa', '#1565c0', '#2e7d32', '#f57f17'];
+            } else if (theme === 'royal-lavender') {
+                colors = ['rgba(229, 193, 167, 0.8)', 'rgba(162, 200, 232, 0.75)', 'rgba(162, 232, 221, 0.7)', 'rgba(235, 210, 155, 0.7)'];
+                borderColors = ['#e5c1a7', '#a2c8e8', '#a2e8dd', '#ebd29b'];
+            } else {
+                colors = ['rgba(191, 85, 236, 0.8)', 'rgba(0, 210, 255, 0.7)', 'rgba(0, 230, 118, 0.6)', 'rgba(255, 204, 0, 0.6)'];
+                borderColors = ['#bf55ec', '#00d2ff', '#00e676', '#ffcc00'];
+            }
+
+            zonesChartInst = new Chart(ctx, {
+                type: 'doughnut', data: { labels: zones.map(z => z.zone), datasets: [{ data: zones.map(z => z.visitor_count),
+                    backgroundColor: colors, borderColor: borderColors, borderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: textPrimary, padding: 15, font: { family: 'Plus Jakarta Sans' } } } } }
+            });
+        }
+
+        function renderSalespersons(perf) {
+            const tbody = document.getElementById("salesperson-list");
+            tbody.innerHTML = "";
+            if (!perf || perf.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-secondary);">No data</td></tr>'; return; }
+            perf.forEach((sp, i) => {
+                tbody.innerHTML += `<tr><td class="salesperson-rank">#${i + 1}</td><td>${sp.salesperson_name}</td><td style="text-align:right;font-weight:700;">${sp.transactions}</td></tr>`;
+            });
+        }
+
+        function renderAnomalies(anomalies) {
+            const list = document.getElementById("anomaly-list");
+            document.getElementById("anomaly-count-badge").innerText = anomalies.length;
+            list.innerHTML = "";
+            if (anomalies.length === 0) { list.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:2rem;">No anomalies detected</div>'; return; }
+            anomalies.forEach(a => {
+                const iconCls = a.severity === 'high' ? 'severity-high' : a.severity === 'medium' ? 'severity-medium' : 'severity-low';
+                list.innerHTML += `<div class="anomaly-item"><div class="anomaly-icon ${iconCls}"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="anomaly-details"><span class="anomaly-title">${a.type.replace(/_/g, ' ')}</span><span class="anomaly-desc">${a.description}</span><span class="anomaly-time">${a.timestamp}</span></div></div>`;
+            });
+        }
+
+        fetchDashboardData();
+    </script>
+</body>
+</html>
