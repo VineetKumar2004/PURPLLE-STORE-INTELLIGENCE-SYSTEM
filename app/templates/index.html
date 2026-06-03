@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Intelligence Dashboard — Purplle ST1008</title>
+    <title>Store Intelligence Dashboard — Purplle ST1008 Brigade Road</title>
+    <meta name="description" content="Real-time store intelligence dashboard for Purplle ST1008 Brigade Road, Bangalore. Features YOLOv8 computer vision tracking, conversion funnel analytics, hourly traffic patterns, zone heatmaps, and sales performance insights.">
+    <meta name="keywords" content="Purplle, Store Intelligence, CCTV Analytics, YOLOv8, Computer Vision, Retail Analytics, Brigade Road, Bangalore, Footfall Tracking, Conversion Funnel">
+    <meta name="author" content="Vineet Kumar">
+    <meta property="og:title" content="Purplle Store Intelligence System — ST1008 Brigade Road">
+    <meta property="og:description" content="AI-powered retail analytics dashboard with real-time footfall tracking, conversion funnels, zone heatmaps, and sales insights for Purplle's Brigade Road store.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Purplle Store Intelligence System">
+    <meta name="twitter:description" content="AI-powered retail analytics: YOLOv8 tracking, conversion funnels, zone analysis & sales insights.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -330,8 +340,15 @@
                         <source src="/video" type="video/mp4">
                     </video>
                     <div id="video-fallback" class="video-overlay" style="display:none;">
-                        <i class="fa-solid fa-triangle-exclamation video-overlay-icon"></i>
-                        <div><h3>No Video Found</h3><p style="font-size:0.8rem;color:var(--text-secondary);">Using synthetic fallback telemetry.</p></div>
+                        <i class="fa-solid fa-cloud video-overlay-icon" style="color:var(--purplle-accent);"></i>
+                        <div>
+                            <h3 style="margin-bottom:0.5rem;">Cloud Deployment Mode</h3>
+                            <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.5;">
+                                CCTV video feed is available in local/Docker deployment only.<br>
+                                Dashboard is powered by pre-processed analytics data.<br>
+                                <span style="color:var(--purplle-accent);font-weight:600;">Store: Brigade Road, Bangalore (ST1008)</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
