@@ -417,10 +417,10 @@ def video():
     if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
         return FileResponse(video_path, media_type="video/mp4")
     
-    # On Vercel, redirect to the CDN-served static video at /demo_video.mp4
+    # On Vercel, redirect to the CDN-served static video at /static/demo_video.mp4
     # This bypasses the 4.5MB lambda response limit and supports HTTP Range (206) requests natively
     if _ON_VERCEL:
-        return RedirectResponse(url="/demo_video.mp4")
+        return RedirectResponse(url="/static/demo_video.mp4")
 
     # Fallback to compressed demo video (local/Docker deployment fallback)
     demo_candidates = [
