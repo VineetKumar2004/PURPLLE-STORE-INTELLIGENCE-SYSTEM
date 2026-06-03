@@ -25,7 +25,6 @@ from fastapi.responses import FileResponse, HTMLResponse
 from loguru import logger
 
 from app.db import get_connection, init_db, get_pipeline_status, get_cache_metric
-from app.pipeline import run_pipeline
 
 app = FastAPI(title="Purplle Store Intelligence API", version="1.0")
 
@@ -331,6 +330,7 @@ def video():
 
 @app.post("/pipeline/run")
 def trigger_pipeline(background_tasks: BackgroundTasks):
+    from app.pipeline import run_pipeline  # lazy import — heavy deps
     background_tasks.add_task(
         run_pipeline,
         video_path=os.environ.get("VIDEO_PATH", "input/video.mp4"),
