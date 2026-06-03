@@ -65,8 +65,8 @@ if os.environ.get("VERCEL"):
             logger.warning(f"Database not found in any candidate path: {candidates}")
     DB_PATH = tmp_db
 else:
-    # Local/Docker: use project root path if the default doesn't exist
-    if not os.path.exists(DB_PATH):
+    # Local/Docker: use project root path if the default doesn't exist and not explicitly set in env
+    if "DB_PATH" not in os.environ and not os.path.exists(DB_PATH):
         alt = os.path.join(_PROJECT_ROOT, "store_intelligence.db")
         if os.path.exists(alt):
             DB_PATH = alt
@@ -416,12 +416,17 @@ def video():
         return FileResponse(annotated, media_type="video/mp4")
     if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
         return FileResponse(video_path, media_type="video/mp4")
-    # Fallback to compressed demo video (Vercel cloud deployment)
+    
+    # On Vercel, redirect to the CDN-served static video at /demo_video.mp4
+    # This bypasses the 4.5MB lambda response limit and supports HTTP Range (206) requests natively
+    if _ON_VERCEL:
+        return RedirectResponse(url="/demo_video.mp4")
+
+    # Fallback to compressed demo video (local/Docker deployment fallback)
     demo_candidates = [
         os.path.join(_PROJECT_ROOT, "static", "demo_video.mp4"),
         os.path.join(os.getcwd(), "static", "demo_video.mp4"),
         "static/demo_video.mp4",
-        "/var/task/static/demo_video.mp4",
     ]
     for demo in demo_candidates:
         if os.path.exists(demo) and os.path.getsize(demo) > 0:
