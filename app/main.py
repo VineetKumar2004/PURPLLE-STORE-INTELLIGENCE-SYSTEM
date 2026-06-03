@@ -126,6 +126,12 @@ def health():
     try:
         info = get_pipeline_status(conn)
         has_data = info.get("status") != "pending"
+        
+        # Determine if video exists (either local full-size or Vercel GitHub fallback)
+        video_path = os.environ.get("VIDEO_PATH", "input/video.mp4")
+        local_video_exists = os.path.exists(video_path) and os.path.getsize(video_path) > 0
+        video_exists = True if _ON_VERCEL else local_video_exists
+
         if not has_data and _ON_VERCEL:
             return {
                 "status": "ok",
@@ -133,16 +139,16 @@ def health():
                 "data_source": FALLBACK_PIPELINE_STATUS["data_source"],
                 "store_id": STORE_ID,
                 "processed_at": FALLBACK_PIPELINE_STATUS["finished_at"],
-                "video_exists": True,
+                "video_exists": video_exists,
             }
-        video_path = os.environ.get("VIDEO_PATH", "input/video.mp4")
+        
         return {
             "status": "ok",
             "pipeline_status": info["status"],
             "data_source": info["data_source"],
             "store_id": STORE_ID,
             "processed_at": info["finished_at"],
-            "video_exists": os.path.exists(video_path) and os.path.getsize(video_path) > 0,
+            "video_exists": video_exists,
         }
     finally:
         conn.close()
