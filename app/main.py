@@ -421,6 +421,7 @@ def video():
         os.path.join(_PROJECT_ROOT, "static", "demo_video.mp4"),
         os.path.join(os.getcwd(), "static", "demo_video.mp4"),
         "static/demo_video.mp4",
+        "/var/task/static/demo_video.mp4",
     ]
     for demo in demo_candidates:
         if os.path.exists(demo) and os.path.getsize(demo) > 0:
