@@ -33,6 +33,23 @@ DB_PATH = os.environ.get("DB_PATH", "store_intelligence.db")
 STORE_ID = os.environ.get("STORE_ID", "ST1008")
 VIDEO_DATE = os.environ.get("VIDEO_DATE", "2026-04-10")
 
+# If running on Vercel, copy SQLite DB to /tmp to allow read-write WAL mode
+if os.environ.get("VERCEL"):
+    import shutil
+    tmp_db_path = "/tmp/store_intelligence.db"
+    os.makedirs(os.path.dirname(tmp_db_path), exist_ok=True)
+    if not os.path.exists(tmp_db_path):
+        src_db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "store_intelligence.db")
+        if os.path.exists(src_db_path):
+            try:
+                shutil.copy2(src_db_path, tmp_db_path)
+                logger.info(f"Copied database from {src_db_path} to {tmp_db_path}")
+            except Exception as e:
+                logger.error(f"Failed to copy database to /tmp: {e}")
+        else:
+            logger.warning(f"Original database not found at {src_db_path}")
+    DB_PATH = tmp_db_path
+
 init_db(DB_PATH)
 
 
