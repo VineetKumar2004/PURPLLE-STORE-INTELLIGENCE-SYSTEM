@@ -31,7 +31,7 @@ from app.fallback_data import (
 )
 
 _ON_VERCEL = bool(os.environ.get("VERCEL"))
-_GITHUB_VIDEO_URL = "https://raw.githubusercontent.com/VineetKumar2004/purplle-store-intelligence-system-vineet/main/static/demo_video.mp4"
+_GITHUB_VIDEO_URL = "https://cdn.jsdelivr.net/gh/VineetKumar2004/purplle-store-intelligence-system-vineet@main/static/demo_video.mp4"
 
 app = FastAPI(title="Purplle Store Intelligence API", version="1.0")
 
