@@ -32,24 +32,40 @@ DB_PATH = os.environ.get("DB_PATH", "store_intelligence.db")
 STORE_ID = os.environ.get("STORE_ID", "ST1008")
 VIDEO_DATE = os.environ.get("VIDEO_DATE", "2026-04-10")
 
-# If running on Vercel, copy SQLite DB to /tmp to allow read-write WAL mode
+# Resolve the database path — works in local, Docker, and Vercel
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 if os.environ.get("VERCEL"):
     import shutil
-    tmp_db_path = "/tmp/store_intelligence.db"
-    os.makedirs(os.path.dirname(tmp_db_path), exist_ok=True)
-    if not os.path.exists(tmp_db_path):
-        src_db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "store_intelligence.db")
-        if os.path.exists(src_db_path):
-            try:
-                shutil.copy2(src_db_path, tmp_db_path)
-                logger.info(f"Copied database from {src_db_path} to {tmp_db_path}")
-            except Exception as e:
-                logger.error(f"Failed to copy database to /tmp: {e}")
+    tmp_db = "/tmp/store_intelligence.db"
+    # Try multiple source locations
+    candidates = [
+        os.path.join(_PROJECT_ROOT, "store_intelligence.db"),
+        os.path.join(os.getcwd(), "store_intelligence.db"),
+        "store_intelligence.db",
+        "/var/task/store_intelligence.db",
+    ]
+    if not os.path.exists(tmp_db):
+        for src in candidates:
+            if os.path.exists(src) and os.path.getsize(src) > 0:
+                try:
+                    shutil.copy2(src, tmp_db)
+                    logger.info(f"Copied database from {src} to {tmp_db} ({os.path.getsize(tmp_db)} bytes)")
+                    break
+                except Exception as e:
+                    logger.error(f"Failed to copy from {src}: {e}")
         else:
-            logger.warning(f"Original database not found at {src_db_path}")
-    DB_PATH = tmp_db_path
+            logger.warning(f"Database not found in any candidate path: {candidates}")
+    DB_PATH = tmp_db
+else:
+    # Local/Docker: use project root path if the default doesn't exist
+    if not os.path.exists(DB_PATH):
+        alt = os.path.join(_PROJECT_ROOT, "store_intelligence.db")
+        if os.path.exists(alt):
+            DB_PATH = alt
 
 init_db(DB_PATH)
+logger.info(f"Database initialized at {DB_PATH} (exists={os.path.exists(DB_PATH)}, size={os.path.getsize(DB_PATH) if os.path.exists(DB_PATH) else 0})")
 
 
 def _db():
