@@ -25,6 +25,13 @@ from fastapi.responses import FileResponse, HTMLResponse
 from loguru import logger
 
 from app.db import get_connection, init_db, get_pipeline_status, get_cache_metric
+from app.fallback_data import (
+    FALLBACK_PIPELINE_STATUS, FALLBACK_METRICS, FALLBACK_HOURLY,
+    FALLBACK_ZONES, FALLBACK_FUNNEL, FALLBACK_ANOMALIES, FALLBACK_SALES_SUMMARY,
+)
+
+_ON_VERCEL = bool(os.environ.get("VERCEL"))
+_GITHUB_VIDEO_URL = "https://raw.githubusercontent.com/VineetKumar2004/purplle-store-intelligence-system-vineet/main/static/demo_video.mp4"
 
 app = FastAPI(title="Purplle Store Intelligence API", version="1.0")
 
@@ -68,6 +75,17 @@ init_db(DB_PATH)
 logger.info(f"Database initialized at {DB_PATH} (exists={os.path.exists(DB_PATH)}, size={os.path.getsize(DB_PATH) if os.path.exists(DB_PATH) else 0})")
 
 
+def _db_has_data() -> bool:
+    """Check if the database has pipeline data (not just empty tables)."""
+    try:
+        conn = _db()
+        info = get_pipeline_status(conn)
+        conn.close()
+        return info.get("status") != "pending"
+    except Exception:
+        return False
+
+
 def _db():
     return get_connection(DB_PATH)
 
@@ -107,6 +125,16 @@ def health():
     conn = _db()
     try:
         info = get_pipeline_status(conn)
+        has_data = info.get("status") != "pending"
+        if not has_data and _ON_VERCEL:
+            return {
+                "status": "ok",
+                "pipeline_status": FALLBACK_PIPELINE_STATUS["status"],
+                "data_source": FALLBACK_PIPELINE_STATUS["data_source"],
+                "store_id": STORE_ID,
+                "processed_at": FALLBACK_PIPELINE_STATUS["finished_at"],
+                "video_exists": True,
+            }
         video_path = os.environ.get("VIDEO_PATH", "input/video.mp4")
         return {
             "status": "ok",
@@ -139,6 +167,8 @@ def metrics():
     conn = _db()
     try:
         info = get_pipeline_status(conn)
+        if info["status"] == "pending" and _ON_VERCEL:
+            return FALLBACK_METRICS
         result = {"date": VIDEO_DATE, "store_id": STORE_ID, "data_source": info["data_source"]}
         if info["status"] == "pending":
             for k, default in _METRICS_KEYS:
@@ -160,6 +190,8 @@ def funnel():
     conn = _db()
     try:
         info = get_pipeline_status(conn)
+        if info["status"] == "pending" and _ON_VERCEL:
+            return {"date": VIDEO_DATE, "stages": FALLBACK_FUNNEL, "overall_conversion_rate": 4.67}
         if info["status"] == "pending":
             return {
                 "date": VIDEO_DATE,
@@ -240,6 +272,9 @@ def events(
 def anomalies():
     conn = _db()
     try:
+        info = get_pipeline_status(conn)
+        if info["status"] == "pending" and _ON_VERCEL:
+            return {"total": len(FALLBACK_ANOMALIES), "anomalies": FALLBACK_ANOMALIES}
         rows = conn.execute(
             "SELECT timestamp, meta FROM events WHERE event_type = 'anomaly' ORDER BY timestamp"
         ).fetchall()
@@ -271,6 +306,8 @@ def hourly():
     conn = _db()
     try:
         info = get_pipeline_status(conn)
+        if info["status"] == "pending" and _ON_VERCEL:
+            return {"date": VIDEO_DATE, "hours": FALLBACK_HOURLY}
         if info["status"] == "pending":
             return {"date": VIDEO_DATE, "hours": [
                 {"hour": f"{h:02d}:00", "visitors": 0, "transactions": 0, "gmv": 0.0}
@@ -304,6 +341,8 @@ def zones():
     conn = _db()
     try:
         info = get_pipeline_status(conn)
+        if info["status"] == "pending" and _ON_VERCEL:
+            return {"zones": FALLBACK_ZONES}
         if info["status"] == "pending":
             return {"zones": [
                 {"zone": z, "visitor_count": 0, "avg_dwell_seconds": 0.0, "pct_of_total": 0.0}
@@ -323,6 +362,8 @@ def sales_summary():
     conn = _db()
     try:
         info = get_pipeline_status(conn)
+        if info["status"] == "pending" and _ON_VERCEL:
+            return FALLBACK_SALES_SUMMARY
         if info["status"] == "pending":
             return {
                 "total_transactions": 0, "unique_customers": 0,
@@ -361,12 +402,13 @@ def dashboard():
 
 @app.get("/video")
 def video():
+    from fastapi.responses import RedirectResponse
     video_path = os.environ.get("VIDEO_PATH", "input/video.mp4")
     annotated = os.path.join(os.path.dirname(video_path), "annotated_video.mp4")
     # Try original full-size videos first (local/Docker)
     if os.path.exists(annotated) and os.path.getsize(annotated) > 0:
         return FileResponse(annotated, media_type="video/mp4")
-    if os.path.exists(video_path):
+    if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
         return FileResponse(video_path, media_type="video/mp4")
     # Fallback to compressed demo video (Vercel cloud deployment)
     demo_candidates = [
@@ -377,7 +419,8 @@ def video():
     for demo in demo_candidates:
         if os.path.exists(demo) and os.path.getsize(demo) > 0:
             return FileResponse(demo, media_type="video/mp4")
-    raise HTTPException(status_code=404, detail="No video file found")
+    # Last resort: redirect to GitHub-hosted video
+    return RedirectResponse(url=_GITHUB_VIDEO_URL)
 
 
 @app.post("/pipeline/run")
