@@ -5,13 +5,17 @@
     }
   },
   "rewrites": [
-    {
-      "source": "/static/:path*",
-      "destination": "/static/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/api/index"
-    }
+    { "source": "/", "destination": "/api/index" },
+    { "source": "/health", "destination": "/api/index" },
+    { "source": "/metrics", "destination": "/api/index" },
+    { "source": "/funnel", "destination": "/api/index" },
+    { "source": "/events", "destination": "/api/index" },
+    { "source": "/anomalies", "destination": "/api/index" },
+    { "source": "/hourly", "destination": "/api/index" },
+    { "source": "/zones", "destination": "/api/index" },
+    { "source": "/sales/summary", "destination": "/api/index" },
+    { "source": "/video", "destination": "/api/index" },
+    { "source": "/pipeline/run", "destination": "/api/index" },
+    { "source": "/debug", "destination": "/api/index" }
   ]
 }
