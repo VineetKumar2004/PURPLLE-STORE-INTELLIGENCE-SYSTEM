@@ -337,10 +337,20 @@ def dashboard():
 def video():
     video_path = os.environ.get("VIDEO_PATH", "input/video.mp4")
     annotated = os.path.join(os.path.dirname(video_path), "annotated_video.mp4")
+    # Try original full-size videos first (local/Docker)
     if os.path.exists(annotated) and os.path.getsize(annotated) > 0:
         return FileResponse(annotated, media_type="video/mp4")
     if os.path.exists(video_path):
         return FileResponse(video_path, media_type="video/mp4")
+    # Fallback to compressed demo video (Vercel cloud deployment)
+    demo_candidates = [
+        os.path.join(_PROJECT_ROOT, "static", "demo_video.mp4"),
+        os.path.join(os.getcwd(), "static", "demo_video.mp4"),
+        "static/demo_video.mp4",
+    ]
+    for demo in demo_candidates:
+        if os.path.exists(demo) and os.path.getsize(demo) > 0:
+            return FileResponse(demo, media_type="video/mp4")
     raise HTTPException(status_code=404, detail="No video file found")
 
 
