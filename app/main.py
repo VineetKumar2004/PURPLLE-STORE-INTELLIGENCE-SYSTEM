@@ -72,6 +72,32 @@ def _db():
     return get_connection(DB_PATH)
 
 
+@app.get("/debug")
+def debug_info():
+    """Temporary debug endpoint to diagnose Vercel file paths."""
+    import glob
+    info = {
+        "DB_PATH": DB_PATH,
+        "DB_EXISTS": os.path.exists(DB_PATH),
+        "DB_SIZE": os.path.getsize(DB_PATH) if os.path.exists(DB_PATH) else 0,
+        "PROJECT_ROOT": _PROJECT_ROOT,
+        "CWD": os.getcwd(),
+        "__file__": os.path.abspath(__file__),
+        "VERCEL_ENV": os.environ.get("VERCEL", "NOT SET"),
+        "files_in_project_root": os.listdir(_PROJECT_ROOT) if os.path.exists(_PROJECT_ROOT) else "NOT FOUND",
+        "files_in_cwd": os.listdir(os.getcwd()),
+        "db_in_root": os.path.exists(os.path.join(_PROJECT_ROOT, "store_intelligence.db")),
+        "db_in_cwd": os.path.exists(os.path.join(os.getcwd(), "store_intelligence.db")),
+        "db_in_var_task": os.path.exists("/var/task/store_intelligence.db"),
+        "static_in_root": os.path.exists(os.path.join(_PROJECT_ROOT, "static")),
+        "static_in_cwd": os.path.exists(os.path.join(os.getcwd(), "static")),
+        "tmp_files": os.listdir("/tmp") if os.path.exists("/tmp") else [],
+        "all_db_files": glob.glob("/var/task/**/*.db", recursive=True) + glob.glob("/tmp/**/*.db", recursive=True),
+        "all_mp4_files": glob.glob("/var/task/**/*.mp4", recursive=True),
+    }
+    return info
+
+
 # ======================================================================
 # Health
 # ======================================================================
