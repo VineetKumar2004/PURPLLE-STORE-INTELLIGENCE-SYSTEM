@@ -6,7 +6,11 @@
   },
   "rewrites": [
     {
-      "source": "/((?!static/|public/).*)",
+      "source": "/static/:path*",
+      "destination": "/static/:path*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/api/index"
     }
   ]
