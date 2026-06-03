@@ -95,7 +95,7 @@ def debug_info():
     """Temporary debug endpoint to diagnose Vercel file paths."""
     import glob
     info = {
-        "COMMIT_HASH": "4e1732a",
+        "COMMIT_HASH": "f826d39-v2",
         "DB_PATH": DB_PATH,
         "DB_EXISTS": os.path.exists(DB_PATH),
         "DB_SIZE": os.path.getsize(DB_PATH) if os.path.exists(DB_PATH) else 0,
