@@ -469,7 +469,22 @@
                 const videoEl = document.getElementById("dashboard-video");
                 const fallback = document.getElementById("video-fallback");
                 const srcLabel = document.getElementById("video-source-label");
-                if (health.video_exists) { videoEl.style.display = "block"; fallback.style.display = "none"; srcLabel.innerText = "Source: CAM 1.mp4"; }
+                if (health.video_exists && health.video_url) {
+                    // Set video src directly to avoid 302 redirects which break
+                    // the <video> element's HTTP Range (206) streaming requirements.
+                    const currentSrc = videoEl.querySelector("source");
+                    if (currentSrc && currentSrc.getAttribute("src") !== health.video_url) {
+                        currentSrc.setAttribute("src", health.video_url);
+                        videoEl.load();  // Reload with new source
+                    }
+                    videoEl.style.display = "block"; fallback.style.display = "none";
+                    srcLabel.innerText = "Source: CAM 1.mp4";
+                }
+                else if (health.video_exists) {
+                    // Fallback: video exists but no direct URL provided (shouldn't happen)
+                    videoEl.style.display = "block"; fallback.style.display = "none";
+                    srcLabel.innerText = "Source: CAM 1.mp4";
+                }
                 else { videoEl.style.display = "none"; fallback.style.display = "flex"; srcLabel.innerText = "Source: SYNTHETIC MODE"; }
 
                 if (health.pipeline_status === "running") { setTimeout(fetchDashboardData, 5000); return; }

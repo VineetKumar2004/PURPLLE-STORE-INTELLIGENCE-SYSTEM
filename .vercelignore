@@ -1,0 +1,9 @@
+# Ignore input videos and other files not needed on Vercel
+input/
+tests/
+.pytest_cache/
+*.zip
+*.xlsx
+*.csv
+yolov8n.pt
+openh264-*.dll

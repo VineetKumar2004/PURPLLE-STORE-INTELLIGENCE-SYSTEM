@@ -31,7 +31,8 @@ from app.fallback_data import (
 )
 
 _ON_VERCEL = bool(os.environ.get("VERCEL"))
-_GITHUB_VIDEO_URL = "https://cdn.jsdelivr.net/gh/VineetKumar2004/purplle-store-intelligence-system-vineet@main/static/demo_video.mp4"
+_GITHUB_VIDEO_URL = "https://raw.githubusercontent.com/VineetKumar2004/PURPLLE-STORE-INTELLIGENCE-SYSTEM/main/static/demo_video.mp4"
+_PUBLIC_VIDEO_URL = "https://raw.githubusercontent.com/VineetKumar2004/PURPLLE-STORE-INTELLIGENCE-SYSTEM/main/static/demo_video.mp4"
 
 app = FastAPI(title="Purplle Store Intelligence API", version="1.0")
 
@@ -133,6 +134,15 @@ def health():
         local_video_exists = os.path.exists(video_path) and os.path.getsize(video_path) > 0
         video_exists = True if _ON_VERCEL else local_video_exists
 
+        # Provide a direct video URL so the frontend can bypass the /video redirect.
+        # On Vercel the /video endpoint does a 302 redirect which breaks <video>
+        # elements that require HTTP Range (206) support for streaming.
+        video_url = None
+        if _ON_VERCEL:
+            video_url = _PUBLIC_VIDEO_URL
+        elif local_video_exists:
+            video_url = "/video"
+
         if not has_data and _ON_VERCEL:
             return {
                 "status": "ok",
@@ -141,6 +151,7 @@ def health():
                 "store_id": STORE_ID,
                 "processed_at": FALLBACK_PIPELINE_STATUS["finished_at"],
                 "video_exists": video_exists,
+                "video_url": video_url,
             }
         
         return {
@@ -150,6 +161,7 @@ def health():
             "store_id": STORE_ID,
             "processed_at": info["finished_at"],
             "video_exists": video_exists,
+            "video_url": video_url,
         }
     finally:
         conn.close()
@@ -418,10 +430,12 @@ def video():
     if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
         return FileResponse(video_path, media_type="video/mp4")
     
-    # On Vercel, redirect to the CDN-served static video at /demo_video.mp4
-    # This bypasses the 4.5MB lambda response limit and supports HTTP Range (206) requests natively
+    # On Vercel, redirect to the public static video.
+    # NOTE: The frontend should prefer the direct video_url from /health instead
+    # of hitting /video, because <video> elements don't reliably follow 302
+    # redirects (they need HTTP Range / 206 support for seeking & streaming).
     if _ON_VERCEL:
-        return RedirectResponse(url="/demo_video.mp4")
+        return RedirectResponse(url=_PUBLIC_VIDEO_URL, status_code=301)
 
     # Fallback to compressed demo video (local/Docker deployment fallback)
     demo_candidates = [
@@ -433,7 +447,7 @@ def video():
         if os.path.exists(demo) and os.path.getsize(demo) > 0:
             return FileResponse(demo, media_type="video/mp4")
     # Last resort: redirect to GitHub-hosted video
-    return RedirectResponse(url=_GITHUB_VIDEO_URL)
+    return RedirectResponse(url=_GITHUB_VIDEO_URL, status_code=301)
 
 
 @app.post("/pipeline/run")
